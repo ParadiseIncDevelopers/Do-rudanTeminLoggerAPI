@@ -1,11 +1,33 @@
 using DoğrudanTeminLoggerAPI.Mapping;
+using DoğrudanTeminLoggerAPI.Services.Abstract;
+using DoğrudanTeminLoggerAPI.Services.Concrete;
+using DoğrudanTeminLoggerAPI.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var cfg = builder.Configuration;
+
+//MongoDb Kayıtları
+//builder.Services.AddScoped(sp => new MongoDBRepository<LogEntry>(cfg["MongoAPI"], cfg["MongoDBName"], "Logging"));
+
+// 1) Ayarları IOptions olarak bağla
+builder.Services.Configure<MongoDbSettings>(
+    builder.Configuration.GetSection("MongoDbSettings"));
+
+// 2) IMongoClient’i singleton olarak ekle
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+    return new MongoClient(settings.ConnectionString);
+});
+
+// 3) LogService kaydı
+builder.Services.AddScoped<ILogService, LogService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));

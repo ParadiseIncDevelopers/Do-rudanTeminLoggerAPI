@@ -27,20 +27,31 @@ namespace DoğrudanTeminLoggerAPI.Services.Concrete
 
         private string GetActiveDatabaseName()
         {
-            var baseName = _settings.DatabaseBaseName;
+            // Eğer ayarlardan bir değer gelmediyse varsayılan baseName'i atıyoruz
+            var baseName = string.IsNullOrWhiteSpace(_settings.DatabaseBaseName)
+                ? "DogrudanTeminLog"
+                : _settings.DatabaseBaseName;
+
+            // BaseName ile başlayan mevcut veritabanı isimlerini alıyoruz
             var dbNames = GetAllDatabaseNames()
                 .Where(n => n.StartsWith(baseName))
                 .OrderBy(n => n)
                 .ToList();
 
+            // Mevcut veritabanlarında hâlâ boş yer varsa (2500 koleksiyon alt sınırı), döndür
             foreach (var name in dbNames)
             {
                 var db = _mongoClient.GetDatabase(name);
-                if (db.ListCollectionNames().ToList().Count < MaxCollectionsPerDb)
+                var collectionCount = db.ListCollectionNames().ToList().Count;
+                if (collectionCount < MaxCollectionsPerDb)
+                {
                     return name;
+                }
             }
-            // create next
-            var nextIndex = dbNames.Count;
+
+            // Eğer hiç database yoksa veya hepsinde 2500 koleksiyon doluysa yeni bir tane oluştur
+            // Burada 1-based suffix kullanıyoruz, ilk veritabanı "DogrudanTemin_0001" olacak
+            var nextIndex = dbNames.Count + 1;
             return $"{baseName}_{nextIndex:D4}";
         }
 
@@ -52,23 +63,30 @@ namespace DoğrudanTeminLoggerAPI.Services.Concrete
 
         private async Task<string> GetActiveCollectionName(DateTime date)
         {
-            var db = GetDatabase();
-            var prefix = $"logs_{date:yyyyMMdd}";
-            var colNames = (await db.ListCollectionNames().ToListAsync())
-                .Where(n => n.StartsWith(prefix))
+            // Prefix sürekli aynı kalacak, suffix kısmını manuel artıracağız
+            const string collPrefix = "TeminColl";
+
+            var db = GetDatabase(); // yukarıdaki GetActiveDatabaseName kullanılarak seçilen DB
+            var allCollNames = (await db.ListCollectionNames().ToListAsync())
+                .Where(n => n.StartsWith(collPrefix))
                 .OrderBy(n => n)
                 .ToList();
 
-            foreach (var name in colNames)
+            // Öncelikle, mevcut "TeminColl_XXXX" adlarına bakıp hala 50.000 belge barındırmayan varsa onu döndür.
+            foreach (var name in allCollNames)
             {
                 var count = (int)(await db.GetCollection<LogEntry>(name)
-                    .CountDocumentsAsync(FilterDefinition<LogEntry>.Empty));
+                    .CountDocumentsAsync(Builders<LogEntry>.Filter.Empty));
                 if (count < MaxDocsPerCollection)
+                {
                     return name;
+                }
             }
-            // create next
-            var next = colNames.Count;
-            return $"{prefix}_{next:D4}";
+
+            // Eğer hiç koleksiyon yoksa ya da hepsi 50.000 sınırına ulaşmışsa yeni bir tanesini oluştur
+            // 1-based suffix: "TeminColl_0001"
+            var nextIndex = allCollNames.Count + 1;
+            return $"{collPrefix}_{nextIndex:D4}";
         }
 
         public async Task LogAsync(LogEntryLogRequest request)
