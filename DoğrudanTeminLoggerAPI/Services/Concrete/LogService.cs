@@ -101,7 +101,7 @@ namespace DoğrudanTeminLoggerAPI.Services.Concrete
                 LogDateTime = request.LogDateTime,
                 LogText = request.LogText,
                 LogDescription = request.LogDescription,
-                LogObjectJson = JsonConvert.SerializeObject(request.LogObject),
+                LogObjectJson = request.LogObject,
                 LogIP = request.LogIP,
                 UserId = request.UserId,
                 Token = request.Token
