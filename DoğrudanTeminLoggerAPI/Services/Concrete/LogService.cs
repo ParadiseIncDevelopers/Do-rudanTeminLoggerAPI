@@ -13,8 +13,8 @@ namespace DoğrudanTeminLoggerAPI.Services.Concrete
     {
         private readonly IMongoClient _mongoClient;
         private readonly MongoDbSettings _settings;
-        private const int MaxDocsPerCollection = 50000;
-        private const int MaxCollectionsPerDb = 2500;
+        private const int MaxDocsPerCollection = 150000;
+        private const int MaxCollectionsPerDb = 25000;
 
         public LogService(IMongoClient mongoClient, IOptions<MongoDbSettings> opts)
         {
