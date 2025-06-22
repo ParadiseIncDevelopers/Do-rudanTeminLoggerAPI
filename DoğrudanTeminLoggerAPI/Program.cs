@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using System.Text;
 
@@ -17,9 +20,6 @@ builder.Services.AddSingleton(new HttpClient(new HttpClientHandler
 {
     ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
 }));
-
-//MongoDb Kayıtları
-//builder.Services.AddScoped(sp => new MongoDBRepository<LogEntry>(cfg["MongoAPI"], cfg["MongoDBName"], "Logging"));
 
 // 1) Ayarları IOptions olarak bağla
 builder.Services.Configure<MongoDbSettings>(
@@ -62,9 +62,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers(options =>
 {
 
-}).AddJsonOptions(opts =>
-{
-    opts.JsonSerializerOptions.Converters.Add(new TurkeyDateTimeConverter());
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

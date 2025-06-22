@@ -91,14 +91,14 @@ namespace DoğrudanTeminLoggerAPI.Services.Concrete
         public async Task PageAsync(PageEntryLogRequest request)
         {
             var db = GetDatabase();
-            var colName = await GetActiveCollectionName(request.LogDateTime);
+            var colName = await GetActiveCollectionName(request.PageLogDateTime);
             var col = db.GetCollection<PageEntry>(colName);
 
             var entry = new PageEntry
             {
                 Id = Guid.NewGuid(),
                 PageUrl = request.PageUrl,
-                LogDateTime = request.LogDateTime,
+                LogDateTime = request.PageLogDateTime.ToTurkeyTime(),
                 UserId = request.UserId,
             };
 

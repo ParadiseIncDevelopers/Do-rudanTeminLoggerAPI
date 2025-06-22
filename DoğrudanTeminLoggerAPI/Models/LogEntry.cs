@@ -8,6 +8,7 @@ namespace DoğrudanTeminLoggerAPI.Models
         [BsonId]
         [BsonRepresentation(BsonType.String)]
         public Guid Id { get; set; }
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime LogDateTime { get; set; }
         public string LogText { get; set; }
         public string LogDescription { get; set; }

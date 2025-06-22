@@ -98,7 +98,7 @@ namespace DoğrudanTeminLoggerAPI.Services.Concrete
             var entry = new LogEntry
             {
                 Id = Guid.NewGuid(),
-                LogDateTime = request.LogDateTime,
+                LogDateTime = request.LogDateTime.ToTurkeyTime(),
                 LogText = request.LogText,
                 LogDescription = request.LogDescription,
                 LogObjectJson = request.LogObject,

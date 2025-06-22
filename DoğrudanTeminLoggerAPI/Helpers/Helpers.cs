@@ -1,4 +1,6 @@
-﻿namespace DoğrudanTeminLoggerAPI.Helpers
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace DoğrudanTeminLoggerAPI.Helpers
 {
     public class LogEntryLogRequest
     {
