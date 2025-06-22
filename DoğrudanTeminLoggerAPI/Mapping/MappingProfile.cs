@@ -11,6 +11,9 @@ namespace DoğrudanTeminLoggerAPI.Mapping
         {
             CreateMap<LogEntryDto, LogEntry>();
             CreateMap<LogEntry, LogEntryDto>();
+
+            CreateMap<PageEntryDto, PageEntry>();
+            CreateMap<PageEntry, PageEntryDto>();
         }
     }
 }

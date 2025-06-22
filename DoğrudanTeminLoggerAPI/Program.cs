@@ -1,3 +1,4 @@
+using DoğrudanTeminLoggerAPI.Helpers;
 using DoğrudanTeminLoggerAPI.Mapping;
 using DoğrudanTeminLoggerAPI.Services.Abstract;
 using DoğrudanTeminLoggerAPI.Services.Concrete;
@@ -11,6 +12,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var cfg = builder.Configuration;
+
+builder.Services.AddSingleton(new HttpClient(new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+}));
 
 //MongoDb Kayıtları
 //builder.Services.AddScoped(sp => new MongoDBRepository<LogEntry>(cfg["MongoAPI"], cfg["MongoDBName"], "Logging"));
@@ -28,6 +34,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 
 // 3) LogService kaydı
 builder.Services.AddScoped<ILogService, LogService>();
+builder.Services.AddScoped<IPageService, PageService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -52,7 +59,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+
+}).AddJsonOptions(opts =>
+{
+    opts.JsonSerializerOptions.Converters.Add(new TurkeyDateTimeConverter());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
