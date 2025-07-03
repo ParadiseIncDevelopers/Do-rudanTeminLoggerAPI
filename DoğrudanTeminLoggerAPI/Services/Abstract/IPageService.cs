@@ -1,5 +1,6 @@
 ﻿using DoğrudanTeminLoggerAPI.Helpers;
 using DoğrudanTeminLoggerAPI.Models;
+using System.Collections.Generic;
 
 namespace DoğrudanTeminLoggerAPI.Services.Abstract
 {

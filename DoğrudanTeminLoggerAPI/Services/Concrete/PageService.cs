@@ -5,6 +5,7 @@ using DoğrudanTeminLoggerAPI.Settings;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections.Concurrent;
 
 namespace DoğrudanTeminLoggerAPI.Services.Concrete
 {
@@ -27,9 +28,7 @@ namespace DoğrudanTeminLoggerAPI.Services.Concrete
         private string GetActiveDatabaseName()
         {
             // Eğer ayarlardan bir değer gelmediyse varsayılan baseName'i atıyoruz
-            var baseName = string.IsNullOrWhiteSpace(_settings.DatabaseBaseName)
-                ? "DogrudanTeminPageLog"
-                : _settings.DatabaseBaseName;
+            var baseName = string.IsNullOrWhiteSpace(_settings.DatabaseName) ? "DogrudanTeminPageLog" : _settings.DatabaseName;
 
             // BaseName ile başlayan mevcut veritabanı isimlerini alıyoruz
             var dbNames = GetAllDatabaseNames()
@@ -124,12 +123,12 @@ namespace DoğrudanTeminLoggerAPI.Services.Concrete
 
             // scan all DBs
             var dbNames = GetAllDatabaseNames()
-                .Where(n => n.StartsWith(_settings.DatabaseBaseName));
+                .Where(n => n.StartsWith("DogrudanTeminPageLog_"));
             foreach (var dbName in dbNames)
             {
                 var db = _mongoClient.GetDatabase(dbName);
                 var colNames = (await db.ListCollectionNames().ToListAsync())
-                    .Where(n => n.StartsWith("logs_"));
+                    .Where(n => n.StartsWith("TeminColl_"));
 
                 foreach (var colName in colNames)
                 {

@@ -37,7 +37,7 @@ namespace DoğrudanTeminLoggerAPI.Controllers
         public async Task<IActionResult> Get([FromQuery] PageQueryParameters q)
         {
             var entries = await _pageService.QueryAsync(q);
-            var dtos = _mapper.Map<IEnumerable<LogEntryDto>>(entries);
+            var dtos = _mapper.Map<IEnumerable<PageEntryDto>>(entries);
             return Ok(dtos);
         }
     }

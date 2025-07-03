@@ -3,6 +3,6 @@
     public class MongoDbSettings
     {
         public string ConnectionString { get; set; }
-        public string DatabaseBaseName { get; set; }
+        public string DatabaseName { get; set; }
     }
 }

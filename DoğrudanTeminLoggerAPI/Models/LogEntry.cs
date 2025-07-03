@@ -15,7 +15,7 @@ namespace DoğrudanTeminLoggerAPI.Models
         public string LogObjectJson { get; set; }
         public string LogIP { get; set; }
         [BsonRepresentation(BsonType.String)]
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
         public string Token { get; set; }
     }
 }
