@@ -22,7 +22,7 @@ namespace DoğrudanTeminLoggerAPI.Helpers
         public string? DescriptionContains { get; set; }
         public string? IpContains { get; set; }
         public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 100;
+        public int PageSize { get; set; } = 500;
     }
 
     public class PageEntryLogRequest
@@ -38,7 +38,7 @@ namespace DoğrudanTeminLoggerAPI.Helpers
         public DateTime? To { get; set; }
         public Guid? UserId { get; set; }
         public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 100;
+        public int PageSize { get; set; } = 500;
         public string? PageUrl { get; set; }
     }
 }
